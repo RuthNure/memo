@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         buttonSave = findViewById(R.id.buttonSave);
+        buttonList = findViewById(R.id.buttonList);
+        buttonSettings = findViewById(R.id.buttonSettings);
         editTextSubject = findViewById(R.id.editTextSubject);
         editTextDescription = findViewById(R.id.editTextDescription);
         editTextDate = findViewById(R.id.editTextDate);
