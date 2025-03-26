@@ -69,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
         radioButtonHigh = findViewById(R.id.radioButtonHigh);
         radioGroupPriority = findViewById(R.id.radioGroupPriority);
 
-        // 🔧 ADD THIS to wire the buttons
+
         buttonList = findViewById(R.id.buttonList);
         buttonSettings = findViewById(R.id.buttonSettings);
 
-        // 🔧 ADD CLICK LOGIC
+
         buttonList.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MemoListActivity.class);
             startActivity(intent);
