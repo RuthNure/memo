@@ -17,6 +17,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.content.Intent;
+import android.widget.ImageButton;
+
+
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +36,12 @@ public class MainActivity extends AppCompatActivity {
 
     private RadioButton radioButtonLow, radioButtonMedium, radioButtonHigh;
 
-    private Button buttonList, buttonSettings, buttonSave;
+
+
+
+    // ✅ FIXED: correct button types
+    private ImageButton buttonList, buttonSettings;
+    private Button buttonSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         buttonSave = findViewById(R.id.buttonSave);
-        buttonList = findViewById(R.id.buttonList);
-        buttonSettings = findViewById(R.id.buttonSettings);
         editTextSubject = findViewById(R.id.editTextSubject);
         editTextDescription = findViewById(R.id.editTextDescription);
         editTextDate = findViewById(R.id.editTextDate);
@@ -61,6 +68,21 @@ public class MainActivity extends AppCompatActivity {
         radioButtonMedium = findViewById(R.id.radioButtonMedium);
         radioButtonHigh = findViewById(R.id.radioButtonHigh);
         radioGroupPriority = findViewById(R.id.radioGroupPriority);
+
+        // 🔧 ADD THIS to wire the buttons
+        buttonList = findViewById(R.id.buttonList);
+        buttonSettings = findViewById(R.id.buttonSettings);
+
+        // 🔧 ADD CLICK LOGIC
+        buttonList.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MemoListActivity.class);
+            startActivity(intent);
+        });
+
+        buttonSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MemoSettingsActivity.class);
+            startActivity(intent);
+        });
 
 
         memo = new Memo();
