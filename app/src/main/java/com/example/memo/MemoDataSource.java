@@ -7,6 +7,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MemoDataSource {
 
     private SQLiteDatabase database;
@@ -77,6 +80,31 @@ public class MemoDataSource {
         }
         return lastId;
     }
+    public List<Memo> getAllMemos() {
+        List<Memo> memoList = new ArrayList<>();
+
+        try {
+            Cursor cursor = database.query("memos", null, null, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    Memo memo = new Memo();
+                    memo.setId(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
+                    memo.setSubject(cursor.getString(cursor.getColumnIndexOrThrow("subject")));
+                    memo.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+                    memo.setPriority(cursor.getString(cursor.getColumnIndexOrThrow("priority")));
+                    memo.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
+                    memoList.add(memo);
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e("MemoDataSource", "Error retrieving memos", e);
+        }
+
+        return memoList;
+    }
+
+
 
 
 
