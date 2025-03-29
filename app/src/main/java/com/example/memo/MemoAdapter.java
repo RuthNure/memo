@@ -1,4 +1,4 @@
-package com.example.memo;
+/*package com.example.memo;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,3 +49,4 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         }
     }
 }
+*/
