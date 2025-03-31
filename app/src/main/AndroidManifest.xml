@@ -21,10 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    <activity android:name=".MemoSettingsActivity" android:exported="false" />
-    <activity android:name=".MemoListActivity" android:exported="false" />
+        <activity
+            android:name=".MemoSettingsActivity"
+            android:exported="false" />
+        <activity android:name=".MemoListActivity" />
+    </application>
 
-</application>
-
-
-    </manifest>
+</manifest>
