@@ -80,6 +80,15 @@ public class MemoDataSource {
         }
         return lastId;
     }
+    public boolean deleteMemo(int id) {
+        boolean didDelete = false;
+        try {
+            didDelete = database.delete("memos", "_id=?", new String[]{String.valueOf(id)}) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return didDelete;
+    }
     public List<Memo> getAllMemos() {
         List<Memo> memoList = new ArrayList<>();
 
