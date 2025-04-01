@@ -46,10 +46,10 @@ public class MemoListActivity extends AppCompatActivity {
         }
         displayedMemoList = new ArrayList<>(fullMemoList);
 
-        sortMemos("Date");
-
         memoAdapter = new MemoAdapter(this, displayedMemoList);
         recyclerView.setAdapter(memoAdapter);
+
+        sortMemos("Date");
 
         settingsButton = findViewById(R.id.buttonSettings);
         addButton = findViewById(R.id.buttonAddMemo);
@@ -118,7 +118,7 @@ public class MemoListActivity extends AppCompatActivity {
     }
 
     private void sortMemos(String option) {
-        if (displayedMemoList != null) {
+        if (displayedMemoList != null && memoAdapter != null) {
             Comparator<Memo> comparator;
             switch (option) {
                 case "Subject":
