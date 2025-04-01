@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     tools:context=".MemoListActivity">
 
-    <!-- Memo List RecyclerView -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Bottom Navigation Bar -->
+
     <LinearLayout
         android:id="@+id/bottomNavigationBar"
         android:layout_width="0dp"
