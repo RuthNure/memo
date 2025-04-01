@@ -13,13 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.memo.MainActivity;
-import com.example.memo.Memo;
-import com.example.memo.MemoAdapter;
-import com.example.memo.MemoDataSource;
-import com.example.memo.MemoSettingsActivity;
-import com.example.memo.R;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +23,8 @@ public class MemoListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MemoAdapter memoAdapter;
     private MemoDataSource dataSource;
-    private List<Memo> memoList;
+    private List<Memo> fullMemoList;
+    private List<Memo> displayedMemoList;
     private ImageButton settingsButton;
     private ImageButton addButton;
 
@@ -38,48 +33,39 @@ public class MemoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memo_list);
 
-        recyclerView = findViewById(R.id.recyclerView); // Corrected ID
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         dataSource = new MemoDataSource(this);
         dataSource.open();
 
-        memoList = dataSource.getAllMemos();
-
-        if (memoList == null) {
+        fullMemoList = dataSource.getAllMemos();
+        if (fullMemoList == null) {
             Toast.makeText(this, "Error Retrieving Memos", Toast.LENGTH_SHORT).show();
-            memoList = Collections.emptyList();
+            fullMemoList = new ArrayList<>();
         }
+        displayedMemoList = new ArrayList<>(fullMemoList);
 
-        memoAdapter = new MemoAdapter(this, memoList);
+        sortMemos("Date");
+
+        memoAdapter = new MemoAdapter(this, displayedMemoList);
         recyclerView.setAdapter(memoAdapter);
 
         settingsButton = findViewById(R.id.buttonSettings);
-        addButton = findViewById(R.id.buttonAddMemo); // Corrected ID
+        addButton = findViewById(R.id.buttonAddMemo);
 
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openSettings();
-            }
+        settingsButton.setOnClickListener(v -> openSettings());
+
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MemoListActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MemoListActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        memoAdapter.setOnItemClickListener(new MemoAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Memo memo = memoList.get(position);
-                Intent intent = new Intent(MemoListActivity.this, MainActivity.class);
-                intent.putExtra("MEMO_ID", memo.getId());
-                startActivity(intent);
-            }
+        memoAdapter.setOnItemClickListener(position -> {
+            Memo memo = displayedMemoList.get(position);
+            Intent intent = new Intent(MemoListActivity.this, MainActivity.class);
+            intent.putExtra("MEMO_ID", memo.getId());
+            startActivity(intent);
         });
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -91,9 +77,9 @@ public class MemoListActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                Memo memo = memoList.get(position);
+                Memo memo = displayedMemoList.get(position);
                 dataSource.deleteMemo(memo.getId());
-                memoList.remove(position);
+                displayedMemoList.remove(position);
                 memoAdapter.notifyItemRemoved(position);
                 Toast.makeText(MemoListActivity.this, "Memo Deleted", Toast.LENGTH_SHORT).show();
             }
@@ -105,33 +91,80 @@ public class MemoListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            String sortOption = data.getStringExtra("SORT_OPTION");
-            if (sortOption != null) {
+            displayedMemoList = new ArrayList<>(fullMemoList);
+
+            if (data.hasExtra("FILTER_PRIORITY")) {
+                String filterPriority = data.getStringExtra("FILTER_PRIORITY");
+                if (filterPriority != null && !filterPriority.isEmpty()) {
+                    filterByPriority(filterPriority);
+                }
+            }
+
+            if (data.hasExtra("SEARCH_QUERY")) {
+                String keyword = data.getStringExtra("SEARCH_QUERY");
+                if (keyword != null && !keyword.isEmpty()) {
+                    filterByKeyword(keyword);
+                }
+            }
+
+            if (data.hasExtra("SORT_OPTION")) {
+                String sortOption = data.getStringExtra("SORT_OPTION");
                 sortMemos(sortOption);
             }
+
+            memoAdapter = new MemoAdapter(this, displayedMemoList);
+            recyclerView.setAdapter(memoAdapter);
         }
     }
 
     private void sortMemos(String option) {
-        if (memoList != null) {
+        if (displayedMemoList != null) {
+            Comparator<Memo> comparator;
             switch (option) {
                 case "Subject":
-                    Collections.sort(memoList, Comparator.comparing(Memo::getSubject));
+                    comparator = Comparator.comparing(Memo::getSubject);
                     break;
                 case "Priority":
-                    Collections.sort(memoList, Comparator.comparing(Memo::getPriority));
+                    comparator = Comparator.comparing(m -> getPriorityValue(m.getPriority()));
                     break;
                 case "Date":
-                    Collections.sort(memoList, Comparator.comparing(Memo::getDate));
-                    break;
                 default:
-                    Toast.makeText(this, "Invalid Sort Option", Toast.LENGTH_SHORT).show();
-                    return;
+                    comparator = Comparator.comparing(Memo::getDate);
+                    break;
             }
+            Collections.sort(displayedMemoList, comparator);
             memoAdapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(this, "Memo list is null", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private int getPriorityValue(String priority) {
+        switch (priority.toLowerCase()) {
+            case "low": return 1;
+            case "medium": return 2;
+            case "high": return 3;
+            default: return 0;
+        }
+    }
+
+    private void filterByPriority(String level) {
+        List<Memo> filtered = new ArrayList<>();
+        for (Memo memo : displayedMemoList) {
+            if (memo.getPriority().equalsIgnoreCase(level)) {
+                filtered.add(memo);
+            }
+        }
+        displayedMemoList = filtered;
+    }
+
+    private void filterByKeyword(String query) {
+        List<Memo> filtered = new ArrayList<>();
+        for (Memo memo : displayedMemoList) {
+            if (memo.getSubject().toLowerCase().contains(query.toLowerCase()) ||
+                    memo.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                filtered.add(memo);
+            }
+        }
+        displayedMemoList = filtered;
     }
 
     private void openSettings() {
