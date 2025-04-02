@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             memo = new Memo();
+            enableEditingFields();
         }
 
 
@@ -235,6 +236,16 @@ public class MainActivity extends AppCompatActivity {
                             Snackbar.LENGTH_SHORT).show();
                 }
             }
+            if (wasSuccessful) {
+                int newId = dataSource.getLastID();
+                memo.setId(newId);
+                Snackbar.make(findViewById(R.id.main),
+                        "Memo saved successfully!",
+                        Snackbar.LENGTH_SHORT).show();
+
+                // 🔒 Disable input fields
+                disableEditingFields();
+            }
 
             dataSource.close();
         } catch (Exception e) {
@@ -282,6 +293,29 @@ public class MainActivity extends AppCompatActivity {
 
         datePickerDialog.show();
     }
+    private void disableEditingFields() {
+        editTextSubject.setEnabled(false);
+        editTextDescription.setEnabled(false);
+        editTextDate.setEnabled(false);
+
+        radioButtonLow.setEnabled(false);
+        radioButtonMedium.setEnabled(false);
+        radioButtonHigh.setEnabled(false);
+
+    }
+    private void enableEditingFields() {
+        editTextSubject.setEnabled(true);
+        editTextDescription.setEnabled(true);
+        editTextDate.setEnabled(true);
+
+        radioButtonLow.setEnabled(true);
+        radioButtonMedium.setEnabled(true);
+        radioButtonHigh.setEnabled(true);
+
+        buttonSave.setEnabled(true);
+    }
+
+
 
 
 }

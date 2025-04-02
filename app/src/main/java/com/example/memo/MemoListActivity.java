@@ -217,19 +217,20 @@ public class MemoListActivity extends AppCompatActivity {
 
 
     private void filterByPriority(String level) {
-        if (level == null || level.isEmpty()) {
-            displayedMemoList = new ArrayList<>(fullMemoList);
-            return;
-        }
-
         List<Memo> filtered = new ArrayList<>();
         for (Memo memo : fullMemoList) {
-            if (memo.getPriority().equalsIgnoreCase(level)) {
+            if (memo.getPriority() != null && memo.getPriority().equalsIgnoreCase(level)) {
                 filtered.add(memo);
             }
         }
+
+        if (filtered.isEmpty()) {
+            Toast.makeText(this, "No memos with priority: " + level, Toast.LENGTH_SHORT).show();
+        }
+
         displayedMemoList = filtered;
     }
+
 
 
     private void filterByKeyword(String query) {
