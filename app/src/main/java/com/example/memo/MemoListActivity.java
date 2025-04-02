@@ -129,7 +129,7 @@ public class MemoListActivity extends AppCompatActivity {
                     break;
                 case "Date":
                 default:
-                    comparator = Comparator.comparing(Memo::getDate);
+                    comparator = Comparator.comparing(Memo::getDate, Comparator.reverseOrder());
                     break;
             }
             Collections.sort(displayedMemoList, comparator);
