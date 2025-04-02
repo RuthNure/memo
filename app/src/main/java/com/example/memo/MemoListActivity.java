@@ -83,7 +83,7 @@ public class MemoListActivity extends AppCompatActivity {
         memoAdapter = new MemoAdapter(this, displayedMemoList);
         recyclerView.setAdapter(memoAdapter);
 
-        sortMemos("Date");
+        //sortMemos("Date");
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -217,14 +217,20 @@ public class MemoListActivity extends AppCompatActivity {
 
 
     private void filterByPriority(String level) {
+        if (level == null || level.isEmpty()) {
+            displayedMemoList = new ArrayList<>(fullMemoList);
+            return;
+        }
+
         List<Memo> filtered = new ArrayList<>();
-        for (Memo memo : displayedMemoList) {
+        for (Memo memo : fullMemoList) {
             if (memo.getPriority().equalsIgnoreCase(level)) {
                 filtered.add(memo);
             }
         }
         displayedMemoList = filtered;
     }
+
 
     private void filterByKeyword(String query) {
         List<Memo> filtered = new ArrayList<>();

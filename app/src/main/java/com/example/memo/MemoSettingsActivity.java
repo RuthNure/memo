@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
@@ -36,10 +37,11 @@ public class MemoSettingsActivity extends AppCompatActivity {
         ImageButton buttonList = findViewById(R.id.buttonList);
         ImageButton buttonSettings = findViewById(R.id.buttonSettings);
         ImageButton buttonSearch = findViewById(R.id.buttonSearch);
+        Button buttonClearFilters = findViewById(R.id.buttonClearFilters);
+
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         selectedSortOption = prefs.getString(KEY_SORT_OPTION, "Date");
-        selectedPriorityFilter = prefs.getString(KEY_PRIORITY_FILTER, "");
         Log.d("PrefsLoad", "Loaded priority filter: " + selectedPriorityFilter);
 
         String savedKeyword = prefs.getString(KEY_SEARCH_QUERY, "");
@@ -100,7 +102,6 @@ public class MemoSettingsActivity extends AppCompatActivity {
             Log.d("PrefsSave", "Saving priority filter: " + selectedPriorityFilter);
             prefs.edit()
                     .putString(KEY_SORT_OPTION, selectedSortOption)
-                    .putString(KEY_PRIORITY_FILTER, selectedPriorityFilter)
                     .putString(KEY_SEARCH_QUERY, keyword)
                     .apply();
 
@@ -123,7 +124,6 @@ public class MemoSettingsActivity extends AppCompatActivity {
 
             prefs.edit()
                     .putString(KEY_SORT_OPTION, selectedSortOption)
-                    .putString(KEY_PRIORITY_FILTER, selectedPriorityFilter)
                     .putString(KEY_SEARCH_QUERY, keyword)
                     .apply();
 
@@ -139,6 +139,16 @@ public class MemoSettingsActivity extends AppCompatActivity {
         buttonSettings.setOnClickListener(view ->
                 Toast.makeText(this, "Already on Settings", Toast.LENGTH_SHORT).show()
         );
+        buttonClearFilters.setOnClickListener(view -> {
+            selectedPriorityFilter = "";
+            radioGroupPriorityFilter.clearCheck();
+
+            SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putString(KEY_PRIORITY_FILTER, "");
+            editor.apply();
+
+            Toast.makeText(this, "Priority filter cleared", Toast.LENGTH_SHORT).show();
+        });
     }
 
 /*
