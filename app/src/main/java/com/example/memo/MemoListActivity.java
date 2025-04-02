@@ -3,7 +3,9 @@ package com.example.memo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,11 +30,16 @@ public class MemoListActivity extends AppCompatActivity {
     private ImageButton settingsButton;
     private ImageButton addButton;
 
+    private Spinner sortSpinner;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memo_list);
 
+        sortSpinner = findViewById(R.id.sortSpinner);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -57,6 +64,20 @@ public class MemoListActivity extends AppCompatActivity {
         recyclerView.setAdapter(memoAdapter);
 
         sortMemos("Date");
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = parent.getItemAtPosition(position).toString();
+                sortMemos(selectedOption);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Default fallback
+                sortMemos("Date");
+            }
+        });
+
 
         settingsButton = findViewById(R.id.buttonSettings);
         addButton = findViewById(R.id.buttonAddMemo);
@@ -74,6 +95,8 @@ public class MemoListActivity extends AppCompatActivity {
             intent.putExtra("MEMO_ID", memo.getId());
             startActivity(intent);
         });
+
+
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -201,4 +224,7 @@ public class MemoListActivity extends AppCompatActivity {
             dataSource.close();
         }
     }
+
+
+
 }

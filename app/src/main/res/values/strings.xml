@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Memo</string>
+    <string-array name="sort_options">
+        <item>Date</item>
+        <item>Priority</item>
+        <item>Subject</item>
+    </string-array>
+
+
 </resources>
