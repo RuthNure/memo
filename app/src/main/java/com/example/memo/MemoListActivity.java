@@ -122,29 +122,44 @@ public class MemoListActivity extends AppCompatActivity {
             Comparator<Memo> comparator;
             switch (option) {
                 case "Subject":
-                    comparator = Comparator.comparing(Memo::getSubject);
+                    comparator = Comparator.comparing(
+                            Memo::getSubject,
+                            Comparator.nullsLast(String::compareToIgnoreCase)
+                    );
                     break;
+
                 case "Priority":
-                    comparator = Comparator.comparing(m -> getPriorityValue(m.getPriority()));
+                    comparator = Comparator.comparing(
+                            m -> getPriorityValue(m.getPriority()),
+                            Comparator.nullsLast(Integer::compareTo)
+                    );
                     break;
+
                 case "Date":
                 default:
-                    comparator = Comparator.comparing(Memo::getDate, Comparator.reverseOrder());
+                    comparator = Comparator.comparing(
+                            Memo::getDate,
+                            Comparator.nullsLast(Comparator.reverseOrder())
+                    );
                     break;
             }
+
             Collections.sort(displayedMemoList, comparator);
             memoAdapter.notifyDataSetChanged();
         }
     }
 
-    private int getPriorityValue(String priority) {
+
+    private Integer getPriorityValue(String priority) {
+        if (priority == null) return 0;
         switch (priority.toLowerCase()) {
-            case "low": return 1;
-            case "medium": return 2;
             case "high": return 3;
+            case "medium": return 2;
+            case "low": return 1;
             default: return 0;
         }
     }
+
 
     private void filterByPriority(String level) {
         List<Memo> filtered = new ArrayList<>();

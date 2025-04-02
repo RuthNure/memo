@@ -20,6 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 import android.content.Intent;
 import android.widget.ImageButton;
 
+import com.google.android.material.snackbar.Snackbar;
+
 
 import java.util.Calendar;
 
@@ -152,11 +154,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
     private void initSaveButton() {
-        dataSource = new MemoDataSource(MainActivity.this);
+        String subject = editTextSubject.getText().toString().trim();
+        String description = editTextDescription.getText().toString().trim();
+
+        if (subject.isEmpty() || description.isEmpty()) {
+            Snackbar.make(findViewById(R.id.main),
+                    "Memo Title and Description are required!",
+                    Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Set memo values before saving
+        memo.setSubject(subject);
+        memo.setDescription(description);
         initPriorityClick();
+
         boolean wasSuccessful;
         try {
             dataSource.open();
@@ -166,18 +179,29 @@ public class MainActivity extends AppCompatActivity {
                 if (wasSuccessful) {
                     int newId = dataSource.getLastID();
                     memo.setId(newId);
-                    Log.d("MemoSave", "Memo saved successfully: " + memo.toString());
+                    Snackbar.make(findViewById(R.id.main),
+                            "Memo saved successfully!",
+                            Snackbar.LENGTH_SHORT).show();
                 }
             } else {
                 wasSuccessful = dataSource.updateMemo(memo);
+                if (wasSuccessful) {
+                    Snackbar.make(findViewById(R.id.main),
+                            "Memo updated successfully!",
+                            Snackbar.LENGTH_SHORT).show();
+                }
             }
+
             dataSource.close();
         } catch (Exception e) {
             wasSuccessful = false;
             Log.e("MemoSaveError", "Error saving memo", e);
-            e.printStackTrace();
+            Snackbar.make(findViewById(R.id.main),
+                    "Error saving memo!",
+                    Snackbar.LENGTH_SHORT).show();
         }
     }
+
 
     private void initPriorityClick() {
         if (radioGroupPriority != null) {
