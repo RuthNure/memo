@@ -1,7 +1,9 @@
 package com.example.memo;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -60,6 +62,24 @@ public class MemoListActivity extends AppCompatActivity {
         }
         displayedMemoList = new ArrayList<>(fullMemoList);
 
+        SharedPreferences prefs = getSharedPreferences("MemoPrefs", MODE_PRIVATE);
+        String savedSort = prefs.getString("sort_option", "Date");
+        String savedFilter = prefs.getString("priority_filter", "");
+        String savedKeyword = prefs.getString("search_query", "");
+
+
+        if (!savedFilter.isEmpty()) {
+            Log.d("PrefsLoad", "Applying saved priority filter: " + savedFilter);
+            filterByPriority(savedFilter);
+        }
+
+        if (!savedKeyword.isEmpty()) {
+            filterByKeyword(savedKeyword);
+        }
+
+        sortMemos(savedSort);
+
+
         memoAdapter = new MemoAdapter(this, displayedMemoList);
         recyclerView.setAdapter(memoAdapter);
 
@@ -115,21 +135,25 @@ public class MemoListActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            // Always reset first!
             displayedMemoList = new ArrayList<>(fullMemoList);
 
+            // Apply filter first
             if (data.hasExtra("FILTER_PRIORITY")) {
                 String filterPriority = data.getStringExtra("FILTER_PRIORITY");
+                Log.d("DEBUG_FILTER", "Priority: " + filterPriority);
+
                 if (filterPriority != null && !filterPriority.isEmpty()) {
                     filterByPriority(filterPriority);
                 }
             }
 
+            // Then search
             if (data.hasExtra("SEARCH_QUERY")) {
                 String keyword = data.getStringExtra("SEARCH_QUERY");
                 if (keyword != null && !keyword.isEmpty()) {
@@ -137,6 +161,7 @@ public class MemoListActivity extends AppCompatActivity {
                 }
             }
 
+            // Then sort
             if (data.hasExtra("SORT_OPTION")) {
                 String sortOption = data.getStringExtra("SORT_OPTION");
                 sortMemos(sortOption);
@@ -146,6 +171,7 @@ public class MemoListActivity extends AppCompatActivity {
             recyclerView.setAdapter(memoAdapter);
         }
     }
+
 
     private void sortMemos(String option) {
         if (displayedMemoList != null && memoAdapter != null) {
@@ -161,8 +187,7 @@ public class MemoListActivity extends AppCompatActivity {
                 case "Priority":
                     comparator = Comparator.comparing(
                             m -> getPriorityValue(m.getPriority()),
-                            Comparator.nullsLast(Integer::compareTo)
-                    );
+                            Comparator.nullsLast(Integer::compareTo).reversed());
                     break;
 
                 case "Date":
@@ -210,6 +235,7 @@ public class MemoListActivity extends AppCompatActivity {
             }
         }
         displayedMemoList = filtered;
+
     }
 
     private void openSettings() {
