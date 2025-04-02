@@ -113,6 +113,39 @@ public class MainActivity extends AppCompatActivity {
         initPriorityClick();});
         //String priorityLevel = getSharedPreferences("MyMemoPriority", Context.MODE_PRIVATE).getString("prioritylevel","low");
 
+        Intent intent = getIntent();
+        if (intent.hasExtra("memoId")) {
+            int memoId = intent.getIntExtra("memoId", -1);
+
+            if (memoId != -1) {
+                dataSource.open();
+                memo = dataSource.getMemoById(memoId);
+                dataSource.close();
+
+                if (memo != null) {
+                    editTextSubject.setText(memo.getSubject());
+                    editTextDescription.setText(memo.getDescription());
+                    editTextDate.setText(memo.getDate());
+
+
+                    if (memo.getPriority() != null) {
+                        switch (memo.getPriority().toLowerCase()) {
+                            case "high": radioButtonHigh.setChecked(true); break;
+                            case "medium": radioButtonMedium.setChecked(true); break;
+                            case "low": radioButtonLow.setChecked(true); break;
+                        }
+                    }
+                }
+            }
+        } else {
+            memo = new Memo();
+        }
+
+
+
+
+
+
     }
     protected void onDestroy() {
         super.onDestroy();

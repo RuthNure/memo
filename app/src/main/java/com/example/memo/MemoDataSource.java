@@ -113,6 +113,30 @@ public class MemoDataSource {
         return memoList;
     }
 
+    public Memo getMemoById(int id) {
+        Memo memo = null;
+        try {
+            String query = "SELECT * FROM memos WHERE _id = ?";
+            Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(id)});
+
+            if (cursor.moveToFirst()) {
+                memo = new Memo();
+                memo.setId(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
+                memo.setSubject(cursor.getString(cursor.getColumnIndexOrThrow("subject")));
+                memo.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+                memo.setPriority(cursor.getString(cursor.getColumnIndexOrThrow("priority")));
+                memo.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return memo;
+    }
+
+
+
+
 
 
 

@@ -51,6 +51,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
 }
 */
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,6 +118,13 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
                 holder.priorityIndicatorView.setBackgroundColor(Color.GRAY);
                 break;
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("memoId", memo.getId());
+            context.startActivity(intent);
+        });
     }
 
     @Override
