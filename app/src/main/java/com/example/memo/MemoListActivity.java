@@ -36,6 +36,13 @@ public class MemoListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        ImageButton buttonNewMemo = findViewById(R.id.buttonNewMemo);
+        buttonNewMemo.setOnClickListener(v -> {
+            Intent intent = new Intent(MemoListActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+
+
         dataSource = new MemoDataSource(this);
         dataSource.open();
 
