@@ -21,6 +21,10 @@ import android.content.Intent;
 import android.widget.ImageButton;
 
 import com.google.android.material.snackbar.Snackbar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 
 
 import java.util.Calendar;
@@ -61,11 +65,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d("hailu", "hailu");
         Log.d("hailu", "hailu");
 
-
+        memo = new Memo();
         buttonSave = findViewById(R.id.buttonSave);
         editTextSubject = findViewById(R.id.editTextSubject);
         editTextDescription = findViewById(R.id.editTextDescription);
         editTextDate = findViewById(R.id.editTextDate);
+
+        String today = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(new Date());
+        editTextDate.setText(today);
+        memo.setDate(today);
+
+
         radioButtonLow = findViewById(R.id.radioButtonLow);
         radioButtonMedium = findViewById(R.id.radioButtonMedium);
         radioButtonHigh = findViewById(R.id.radioButtonHigh);
@@ -87,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        memo = new Memo();
+
+
 
 
         buttonSave.setOnClickListener(v -> {
