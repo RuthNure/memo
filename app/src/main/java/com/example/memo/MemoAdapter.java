@@ -104,19 +104,16 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         holder.memoDateTextView.setText(memo.getDate());
 
         // Set priority color
-        switch (memo.getPriority().toLowerCase()) {
-            case "high":
-                holder.priorityIndicatorView.setBackgroundColor(Color.RED);
-                break;
-            case "medium":
-                holder.priorityIndicatorView.setBackgroundColor(Color.YELLOW);
-                break;
-            case "low":
-                holder.priorityIndicatorView.setBackgroundColor(Color.GREEN);
-                break;
-            default:
-                holder.priorityIndicatorView.setBackgroundColor(Color.GRAY);
-                break;
+        String priority = memo.getPriority().toLowerCase();
+
+        if (priority.equals("high")) {
+            holder.priorityIndicatorView.setBackgroundColor(Color.RED);
+        } else if (priority.equals("medium")) {
+            holder.priorityIndicatorView.setBackgroundColor(Color.YELLOW);
+        } else if (priority.equals("low")) {
+            holder.priorityIndicatorView.setBackgroundColor(Color.GREEN);
+        } else {
+            holder.priorityIndicatorView.setBackgroundColor(Color.GRAY);
         }
 
         holder.itemView.setOnClickListener(v -> {
