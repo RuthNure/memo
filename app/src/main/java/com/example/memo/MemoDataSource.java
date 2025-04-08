@@ -13,15 +13,16 @@ import java.util.List;
 public class MemoDataSource {
 
     private SQLiteDatabase database;
-
     private MemoDatabaseHelper dbHelper;
 
     public MemoDataSource(Context context) {
         dbHelper = new MemoDatabaseHelper(context);
     }
+
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
+
     public void close() {
         database.close();
     }
@@ -45,41 +46,39 @@ public class MemoDataSource {
         return didSucceed;
     }
 
-
     public boolean updateMemo(Memo memo) {
         boolean didSucceed = false;
         try {
             int id = memo.getId();
             ContentValues updateValues = new ContentValues();
             updateValues.put("subject", memo.getSubject());
-            updateValues.put("description",  memo.getDescription());
-            updateValues.put("priority",  memo.getPriority());
-            updateValues.put("date",  memo.getDate());
+            updateValues.put("description", memo.getDescription());
+            updateValues.put("priority", memo.getPriority());
+            updateValues.put("date", memo.getDate());
 
             didSucceed = database.update("memos", updateValues, "_id=" + id, null) > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
-        } return didSucceed;
-
-
+        }
+        return didSucceed;
     }
 
-    public int getLastID(){
+    public int getLastID() {
         int lastId;
         try {
-            String query = "Select MAX(_id) from memos";
-            Cursor cursor = database.rawQuery(query,null);
+            String query = "SELECT MAX(_id) FROM memos";
+            Cursor cursor = database.rawQuery(query, null);
 
             cursor.moveToFirst();
             lastId = cursor.getInt(0);
             cursor.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             lastId = -1;
         }
         return lastId;
     }
+
     public boolean deleteMemo(int id) {
         boolean didDelete = false;
         try {
@@ -89,8 +88,9 @@ public class MemoDataSource {
         }
         return didDelete;
     }
+
     public List<Memo> getAllMemos() {
-        List<Memo> memoList = new ArrayList<>();
+        ArrayList<Memo> memoList = new ArrayList<>();
 
         try {
             Cursor cursor = database.query("memos", null, null, null, null, null, null);
@@ -111,6 +111,36 @@ public class MemoDataSource {
         }
 
         return memoList;
+    }
+
+    public ArrayList<Memo> getMemos(String sortField, String sortOrder) {
+        ArrayList<Memo> memos = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM memos ORDER BY " + sortField + " " + sortOrder;
+            cursor = database.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    Memo newMemo = new Memo();
+                    newMemo.setId(cursor.getInt(0));
+                    newMemo.setSubject(cursor.getString(1));
+                    newMemo.setDescription(cursor.getString(2));
+                    newMemo.setPriority(cursor.getString(3));
+                    newMemo.setDate(cursor.getString(4));
+                    memos.add(newMemo);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("MemoDBSource", "Error getting memos", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return memos;
     }
 
     public Memo getMemoById(int id) {
@@ -134,11 +164,38 @@ public class MemoDataSource {
         return memo;
     }
 
+    public ArrayList<Memo> searchMemos(String keyword) {
+        ArrayList<Memo> memoList = new ArrayList<>();
+        Cursor cursor = null;
 
+        try {
+            String query = "SELECT * FROM memos WHERE subject LIKE ? OR description LIKE ?";
+            String[] args = new String[]{"%" + keyword + "%", "%" + keyword + "%"};
 
+            cursor = database.rawQuery(query, args);
 
+            if (cursor.moveToFirst()) {
+                do {
+                    Memo memo = new Memo();
+                    memo.setId(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
+                    memo.setSubject(cursor.getString(cursor.getColumnIndexOrThrow("subject")));
+                    memo.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+                    memo.setPriority(cursor.getString(cursor.getColumnIndexOrThrow("priority")));
+                    memo.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
 
+                    memoList.add(memo);
+                } while (cursor.moveToNext());
+            }
 
+            Log.d("MemoDBSource", "Search successful. Found " + memoList.size() + " results.");
+        } catch (Exception e) {
+            Log.e("MemoDBSource", "Error searching memos", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
 
-
+        return memoList;
+    }
 }

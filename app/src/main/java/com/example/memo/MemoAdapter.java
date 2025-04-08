@@ -57,15 +57,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder> {
 
-    private List<Memo> memoList;
+    private ArrayList<Memo> memoList;
     private Context context;
     private OnItemClickListener listener;
 
@@ -77,7 +79,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         this.listener = listener;
     }
 
-    public MemoAdapter(Context context, List<Memo> memoList) {
+    public MemoAdapter(ArrayList<Memo> memoList, Context context) {
         this.context = context;
         this.memoList = memoList;
     }
@@ -94,7 +96,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         Memo memo = memoList.get(position);
 
         holder.memoTitleTextView.setText(memo.getSubject());
-        // Truncate description
+
         String description = memo.getDescription();
         if (description.length() > 50) {
             description = description.substring(0, 50) + "...";
@@ -103,19 +105,17 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         holder.memoDescriptionTextView.setText(description);
         holder.memoDateTextView.setText(memo.getDate());
 
-        // Set priority color
         String priority = memo.getPriority().toLowerCase();
 
         if (priority.equals("high")) {
             holder.priorityIndicatorView.setBackgroundColor(Color.RED);
         } else if (priority.equals("medium")) {
-            holder.priorityIndicatorView.setBackgroundColor(Color.YELLOW);
-        } else if (priority.equals("low")) {
             holder.priorityIndicatorView.setBackgroundColor(Color.GREEN);
+        } else if (priority.equals("low")) {
+            holder.priorityIndicatorView.setBackgroundColor(Color.YELLOW);
         } else {
             holder.priorityIndicatorView.setBackgroundColor(Color.GRAY);
         }
-
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
             Intent intent = new Intent(context, MainActivity.class);
@@ -127,6 +127,11 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
     @Override
     public int getItemCount() {
         return memoList.size();
+    }
+
+    public void setMemos(ArrayList<Memo> memoList) {
+        this.memoList = memoList;
+        notifyDataSetChanged();
     }
 
     public class MemoViewHolder extends RecyclerView.ViewHolder {
@@ -142,14 +147,11 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             memoDateTextView = itemView.findViewById(R.id.memoDateTextView);
             priorityIndicatorView = itemView.findViewById(R.id.priorityIndicatorView);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemClick(position);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(position);
                     }
                 }
             });
