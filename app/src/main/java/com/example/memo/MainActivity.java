@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    // ✅ FIXED: correct button types
     private ImageButton buttonList, buttonSettings;
     private Button buttonSave;
 
@@ -243,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
                         "Memo saved successfully!",
                         Snackbar.LENGTH_SHORT).show();
 
-                // 🔒 Disable input fields
                 disableEditingFields();
             }
 

@@ -89,30 +89,6 @@ public class MemoDataSource {
         return didDelete;
     }
 
-    public List<Memo> getAllMemos() {
-        ArrayList<Memo> memoList = new ArrayList<>();
-
-        try {
-            Cursor cursor = database.query("memos", null, null, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    Memo memo = new Memo();
-                    memo.setId(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
-                    memo.setSubject(cursor.getString(cursor.getColumnIndexOrThrow("subject")));
-                    memo.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
-                    memo.setPriority(cursor.getString(cursor.getColumnIndexOrThrow("priority")));
-                    memo.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
-                    memoList.add(memo);
-                } while (cursor.moveToNext());
-                cursor.close();
-            }
-        } catch (Exception e) {
-            Log.e("MemoDataSource", "Error retrieving memos", e);
-        }
-
-        return memoList;
-    }
-
     public ArrayList<Memo> getMemos(String sortField, String sortOrder) {
         ArrayList<Memo> memos = new ArrayList<>();
         Cursor cursor = null;
