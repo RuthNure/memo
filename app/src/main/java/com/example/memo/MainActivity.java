@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -108,9 +109,12 @@ public class MainActivity extends AppCompatActivity {
 
         initTextChangedEvents();
 
-        radioGroupPriority.setOnCheckedChangeListener((group, checkedId) -> {
-        initPriorityClick();});
-        //String priorityLevel = getSharedPreferences("MyMemoPriority", Context.MODE_PRIVATE).getString("prioritylevel","low");
+        radioGroupPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                initPriorityClick();
+            }
+        });
 
         Intent intent = getIntent();
         if (intent.hasExtra("memoId")) {
@@ -209,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Set memo values before saving
         memo.setSubject(subject);
         memo.setDescription(description);
         initPriorityClick();
@@ -280,17 +283,20 @@ public class MainActivity extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    String selectedDate = (selectedMonth + 1) + "/" + selectedDay + "/" + selectedYear;
-                    editTextDate.setText(selectedDate);
-                    memo.setDate(selectedDate);
+                this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                        String selectedDate = (selectedMonth + 1) + "/" + selectedDay + "/" + selectedYear;
+                        editTextDate.setText(selectedDate);
+                        memo.setDate(selectedDate);
+                    }
                 },
                 year, month, day
         );
 
         datePickerDialog.show();
     }
+
     private void disableEditingFields() {
         editTextSubject.setEnabled(false);
         editTextDescription.setEnabled(false);

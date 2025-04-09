@@ -89,6 +89,7 @@ public class MemoDataSource {
         return didDelete;
     }
 
+    //MB
     public ArrayList<Memo> getMemos(String sortField, String sortOrder) {
         ArrayList<Memo> memos = new ArrayList<>();
         Cursor cursor = null;
@@ -140,6 +141,7 @@ public class MemoDataSource {
         return memo;
     }
 
+    //M
     public ArrayList<Memo> searchMemos(String keyword) {
         ArrayList<Memo> memoList = new ArrayList<>();
         Cursor cursor = null;
